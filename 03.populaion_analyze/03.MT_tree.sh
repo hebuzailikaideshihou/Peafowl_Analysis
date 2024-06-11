@@ -35,6 +35,6 @@ mkdir -p ../05.iqtree
 
 python2 ../seq.file.converter.py -i 77.trimML.fa -inf FASTA -outf PHYLIP > 78.phy
 
-java -jar /public/home/04021/software/jmodeltest-2.1.10/jModelTest.jar -d 77.phy -i -f -g 4 -BIC -AIC -AICc -DT -v -a -w
+java -jar ./jModelTest.jar -d 77.phy -i -f -g 4 -BIC -AIC -AICc -DT -v -a -w
 
 raxmlHPC-PTHREADS-AVX2 -f a -x 123 -p 23 -# 100 -k -s 77.phy -m GTRGAMMA -n Mit_tree_boot -T 20 -o ERR5432909,ERR5432257
