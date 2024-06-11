@@ -4,7 +4,7 @@ export fastq=./01.all.list
 export BAM=./mapping/02.bam
 export GVCF=./mapping/03.gvcf
 
-/usr/bin/java -Xmx25g -Djava.io.tmpdir=/public/home/04021/tmp -jar $trimmomatic PE -threads 12 \
+/usr/bin/java -Xmx25g -Djava.io.tmpdir=./tmp -jar $trimmomatic PE -threads 12 \
 -summary $fastq/${sample}.summary \
 $fastq/${sample}_1.fastq.gz \
 $fastq/${sample}_2.fastq.gz \
@@ -17,21 +17,21 @@ echo "trim is Done!"
 
 rm -rf $fastq/${sample}_1_singleton.fq.gz $fastq/${sample}_2_singleton.fq.gz 
 
-bwa mem -t 12 -M -R '@RG\tID:${sample}\tLB:${sample}\tPL:ILLUMINA\tSM:${sample}' $ref $fastq/${sample}_1_trimmed.fq.gz $fastq/${sample}_2_trimmed.fq.gz | /public/home/04021/software/samtools-1.16.1/bin/samtools view -bS - >$BAM/${sample}.bam
+bwa mem -t 12 -M -R '@RG\tID:${sample}\tLB:${sample}\tPL:ILLUMINA\tSM:${sample}' $ref $fastq/${sample}_1_trimmed.fq.gz $fastq/${sample}_2_trimmed.fq.gz | ./software/samtools-1.16.1/bin/samtools view -bS - >$BAM/${sample}.bam
 echo "mapping is Done!"
-/usr/bin/java -Djava.io.tmpdir=/public/home/04021/tmp -Xmx50g -jar $PICARD SortSam I=$BAM/${sample}.bam O=$BAM/${sample}.sort.bam SORT_ORDER=coordinate
+/usr/bin/java -Djava.io.tmpdir=./tmp -Xmx50g -jar $PICARD SortSam I=$BAM/${sample}.bam O=$BAM/${sample}.sort.bam SORT_ORDER=coordinate
 echo "sort is Done!"
-/usr/bin/java -Djava.io.tmpdir=/public/home/04021/tmp -Xmx50g -jar $PICARD MarkDuplicates I=$BAM/${sample}.sort.bam O=$BAM/${sample}.sort.dedup.bam M=$BAM/${sample}.marked_dup_metrics.txt REMOVE_DUPLICATES=true CREATE_INDEX=true VALIDATION_STRINGENCY=LENIENT
+/usr/bin/java -Djava.io.tmpdir=./tmp -Xmx50g -jar $PICARD MarkDuplicates I=$BAM/${sample}.sort.bam O=$BAM/${sample}.sort.dedup.bam M=$BAM/${sample}.marked_dup_metrics.txt REMOVE_DUPLICATES=true CREATE_INDEX=true VALIDATION_STRINGENCY=LENIENT
 echo "DeDup is Done!"
 
-/usr/bin/java -Djava.io.tmpdir=/public/home/04021/tmp -Xmx50g -jar $GATK3_8 \
+/usr/bin/java -Djava.io.tmpdir=./tmp -Xmx50g -jar $GATK3_8 \
            -T RealignerTargetCreator \
 		   -R $ref \
 		   -I $BAM/${sample}.sort.dedup.bam \
 		   -nt 12 \
 		   -o $BAM/${sample}.RTC.intervals \
 		   -allowPotentiallyMisencodedQuals
-/usr/bin/java -Djava.io.tmpdir=/public/home/04021/tmp -Xmx50g -jar $GATK3_8 \
+/usr/bin/java -Djava.io.tmpdir=./tmp -Xmx50g -jar $GATK3_8 \
            -T IndelRealigner \
 		   -R $ref \
 		   -I $BAM/${sample}.sort.dedup.bam \
@@ -41,7 +41,7 @@ echo "DeDup is Done!"
 
 rm -rf $BAM/${sample}.bam $BAM/${sample}.sort.dedup.bam $BAM/${sample}.marked_dup_metrics.txt $BAM/${sample}.RTC.intervals $BAM/${sample}.sort.dedup.bai
             
-/usr/bin/java -Djava.io.tmpdir=/public/home/04021/tmp -Xmx50g -jar $GATK3_8 \
+/usr/bin/java -Djava.io.tmpdir=./tmp -Xmx50g -jar $GATK3_8 \
 		-T HaplotypeCaller \
 		-R $ref \
 		-ERC GVCF \
@@ -56,7 +56,7 @@ export GVCF=./mapping/03.gvcf
 export Genotype=./mapping/04.raw_vcf/79.merge_vcf
 
 
-/usr/bin/java -Djava.io.tmpdir=/public/home/04021/tmp -Xmx100g -jar $GATK3_8 \
+/usr/bin/java -Djava.io.tmpdir=./tmp -Xmx100g -jar $GATK3_8 \
         -R $ref \
         -T GenotypeGVCFs \
         --variant $Genotype/78.list \
