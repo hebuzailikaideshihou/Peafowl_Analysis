@@ -1,4 +1,4 @@
-setwd("D:\\CAUCLOUD\\Peacock\\02.test\\26.RNA")
+setwd("")
 library(DESeq2)
 library(dplyr)
 library(ggplot2)
