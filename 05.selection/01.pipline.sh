@@ -24,7 +24,7 @@ index=./White_Pavo
 label=
 out=
 mkdir -p ${out}
-fq=/public/home/04021/01.chinese/01.wg/01.kongque/02.test/26.RNA/01.fastq
+fq=
 fastp -i ${fq}/${label}.fq.gz -o ${fq}/${label}.clean.fq.gz
 hisat2 --dta -p 6 -U ${fq}/${label}.clean.fq.gz -x ${index} -S ${out}.sam
 samtools view -@ 6 -b -S ${out}.sam > ${out}.bam
